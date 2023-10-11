@@ -53,6 +53,8 @@ while True:
 
         if question is None:
             continue
+        
+        print(f"Du har besvarat {questions_asked} frågor korrekt av {num_questions} möjliga.")
 
         user_answer = get_integer_input(f"Fråga {questions_asked + 1}: {question} = ", 0, 1000)
 
@@ -68,6 +70,8 @@ while True:
 
         questions_asked += 1
 
+        print(f"Du har nu {questions_asked} korrekta svar och {num_questions - questions_asked} frågor kvar.")
+        
         if questions_asked == num_questions:
             print("Grattis! Du har vunnit!")
             break
