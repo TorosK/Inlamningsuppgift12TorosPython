@@ -36,17 +36,19 @@ while True:
     questions_asked = 0
     correct_answers = 0
     used_questions = {}
-    
-    while questions_asked < num_questions:
-        if operation == 'slump':
-            operation = random.choice(['*', '/', '%'])
-            table_or_divisor = random.randint(
-                2, 
-                12 if operation == '*' else 5
-            )
 
-        question, answer = generate_question(operation, table_or_divisor)
+    while questions_asked < num_questions:
         
+        # Här slumpar vi räknesätt och table_or_divisor för varje fråga om räknesättet är 'slump'
+        if operation == 'slump':
+            current_operation = random.choice(['*', '/', '%'])
+            current_table_or_divisor = random.randint(2, 12 if current_operation == '*' else 5)
+        else:
+            current_operation = operation
+            current_table_or_divisor = table_or_divisor
+
+        question, answer = generate_question(current_operation, current_table_or_divisor)
+
         max_occurrences = 1
         if 14 <= num_questions <= 26:
             max_occurrences = 2
@@ -57,7 +59,7 @@ while True:
             continue
 
         user_answer = get_integer_input(f"Fråga {questions_asked + 1}: {question} = ", 0, 1000)
-        
+
         if user_answer == answer:
             correct_answers += 1
             print(f"Korrekt! Du har {correct_answers} korrekta svar.")
