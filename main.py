@@ -32,15 +32,40 @@ def choose_door(num_doors):
         print(f"Säker! Zombiesarna var bakom dörr {zombie_door}.")
         return True
 
+# Variabler för att spara spelets förutsättningar
+previous_num_questions = None
+previous_operation = None
+previous_table_or_divisor = None
+user_won_last_game = False
+
 while True:
-    num_questions = get_integer_input("Välj antal frågor (12 - 39): ", 12, 39)
-    operation = input("Välj räknesätt (*, /, %, slump): ")
+    if user_won_last_game or previous_num_questions is None:
+        num_questions = get_integer_input("Välj antal frågor (12 - 39): ", 12, 39)
+        operation = input("Välj räknesätt (*, /, %, slump): ")
+        if operation not in ['*', '/', '%', 'slump']:
+            print("Ogiltigt räknesätt valt. Försök igen.")
+            continue
+    else:
+        num_questions = previous_num_questions
+        operation = previous_operation
 
     if operation != 'slump':
-        if operation == '*':
-            table_or_divisor = get_integer_input("Välj en tabell (2-12): ", 2, 12)
-        elif operation in ['/', '%']:
-            table_or_divisor = get_integer_input("Välj en divisor (2-5): ", 2, 5)
+        if user_won_last_game or previous_table_or_divisor is None:
+            table_or_divisor = get_integer_input("Välj en tabell eller divisor (beroende på val av räknesätt): ", 2, 12)
+        else:
+            table_or_divisor = previous_table_or_divisor
+    else:
+        table_or_divisor = None
+
+    # Spara spelets förutsättningar
+    previous_num_questions = num_questions
+    previous_operation = operation
+    previous_table_or_divisor = table_or_divisor
+
+    # Reset variables
+    questions_asked = 0
+    correct_answers = 0
+    user_won_last_game = False  # Reset flag
 
     questions_asked = 0
     correct_answers = 0
@@ -74,7 +99,7 @@ while True:
         
         if questions_asked == num_questions:
             print("Grattis! Du har vunnit!")
-            break
+            user_won_last_game = True
 
     play_again = input("Vill du spela igen? (ja/nej): ").lower()
     if play_again != 'ja':
