@@ -38,7 +38,16 @@ previous_operation = None
 previous_table_or_divisor = None
 user_won_last_game = False
 
-while True:
+# Variabel för att hålla reda på ställda frågor
+asked_questions = {}
+
+continue_game = True
+while continue_game:
+    # Nollställ variabler för ny spelomgång
+    correct_answers = 0
+    questions_asked = 0
+    asked_questions = {}
+    
     if user_won_last_game or previous_num_questions is None:
         num_questions = get_integer_input("Välj antal frågor (12 - 39): ", 12, 39)
         operation = input("Välj räknesätt (*, /, %, slump): ")
@@ -51,7 +60,10 @@ while True:
 
     if operation != 'slump':
         if user_won_last_game or previous_table_or_divisor is None:
-            table_or_divisor = get_integer_input("Välj en tabell eller divisor (beroende på val av räknesätt): ", 2, 12)
+            if operation == '*':
+                table_or_divisor = get_integer_input("Välj en tabell (2 - 12): ", 2, 12)
+            elif operation in ['/', '%']:
+                table_or_divisor = get_integer_input("Välj en divisor (2 - 5): ", 2, 5)
         else:
             table_or_divisor = previous_table_or_divisor
     else:
@@ -67,18 +79,29 @@ while True:
     correct_answers = 0
     user_won_last_game = False  # Reset flag
 
-    questions_asked = 0
-    correct_answers = 0
-
     while questions_asked < num_questions:
-        current_operation = operation if operation != 'slump' else random.choice(['*', '/', '%'])
-        current_table_or_divisor = random.randint(2, 12 if current_operation == '*' else 5) if operation == 'slump' else table_or_divisor
+        # Generera en unik fråga
+        # Inre loop för att hantera varje fråga
+        question_loop = True
+        while question_loop:
+            current_operation = operation if operation != 'slump' else random.choice(['*', '/', '%'])
+            current_table_or_divisor = random.randint(2, 12 if current_operation == '*' else 5) if operation == 'slump' else table_or_divisor
+            question, answer = generate_question(current_operation, current_table_or_divisor)
 
-        question, answer = generate_question(current_operation, current_table_or_divisor)
+            # Kolla om frågan redan har ställts och hur många gånger
+            times_asked = asked_questions.get(question, 0)
 
-        if question is None:
-            continue
-        
+            # Regler för att förhindra repetering
+            if num_questions <= 13 and times_asked == 0:
+                break
+            elif 14 <= num_questions <= 26 and times_asked < 2:
+                break
+            elif 27 <= num_questions <= 39 and times_asked < 3:
+                break
+
+        # Uppdatera antalet gånger frågan har ställts
+        asked_questions[question] = asked_questions.get(question, 0) + 1
+
         print(f"Du har besvarat {questions_asked} frågor korrekt av {num_questions} möjliga.")
 
         user_answer = get_integer_input(f"Fråga {questions_asked + 1}: {question} = ", 0, 1000)
@@ -95,7 +118,7 @@ while True:
 
         questions_asked += 1
 
-        print(f"Du har nu {questions_asked} korrekta svar och {num_questions - questions_asked} frågor kvar.")
+        print(f"Du har nu {correct_answers} korrekta svar och {num_questions - questions_asked} frågor kvar.")
         
         if questions_asked == num_questions:
             print("Grattis! Du har vunnit!")
@@ -103,4 +126,4 @@ while True:
 
     play_again = input("Vill du spela igen? (ja/nej): ").lower()
     if play_again != 'ja':
-        break
+        continue_game = False
