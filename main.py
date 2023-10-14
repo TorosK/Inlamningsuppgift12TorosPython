@@ -21,10 +21,13 @@ def get_operation_input(prompt, valid_operations):
         else:
             print("Ogiltigt räknesätt valt. Försök igen.")
 
-def generate_question(operation, table_or_divisor, asked_questions):
+def generate_question(operation, table_or_divisor, asked_questions, num_questions):
     # Generate a math question based on given operation and table/divisor
     if operation not in ['*', '/', '%']:
         raise ValueError("Invalid operation")
+
+        while True:
+            factor_or_dividend = random.randint(1, 12)
 
     while True:
         factor_or_dividend = random.randint(1, 12)
@@ -38,10 +41,14 @@ def generate_question(operation, table_or_divisor, asked_questions):
             question = f"{factor_or_dividend} % {table_or_divisor}"
             answer = factor_or_dividend % table_or_divisor
 
-        if question not in asked_questions.keys():
-            asked_questions[question] = asked_questions.get(question, 0) + 1
-            return question, answer
+        times_asked = asked_questions.get(question, 0)
 
+        # Set the maximum allowed frequency based on the number of questions
+        max_frequency = 1 if num_questions <= 13 else 2 if num_questions <= 26 else 3
+        
+        if times_asked < max_frequency:
+            asked_questions[question] = times_asked + 1
+            return question, answer
 
 def choose_door(num_doors):
     # Choose a door to escape zombies; random choice for zombie door
@@ -101,7 +108,7 @@ while continue_game:
         current_table_or_divisor = random.randint(2, 12 if current_operation == '*' else 5) if operation == 'slump' else table_or_divisor
 
         try:
-            question, answer = generate_question(current_operation, current_table_or_divisor, asked_questions)
+            question, answer = generate_question(current_operation, current_table_or_divisor, asked_questions, num_questions)
         except ValueError:
             print("Invalid operation, please restart the game.")
             break
