@@ -21,21 +21,27 @@ def get_operation_input(prompt, valid_operations):
         else:
             print("Ogiltigt räknesätt valt. Försök igen.")
 
-def generate_question(operation, table_or_divisor):
+def generate_question(operation, table_or_divisor, asked_questions):
     # Generate a math question based on given operation and table/divisor
     if operation not in ['*', '/', '%']:
         raise ValueError("Invalid operation")
 
-    factor_or_dividend = random.randint(1, 12)
-    if operation == '*':
-        return f"{factor_or_dividend} * {table_or_divisor}", \
-               factor_or_dividend * table_or_divisor
-    elif operation == '/':
-        return f"{factor_or_dividend * table_or_divisor} // {table_or_divisor}", \
-               factor_or_dividend
-    elif operation == '%':
-        return f"{factor_or_dividend} % {table_or_divisor}", \
-               factor_or_dividend % table_or_divisor
+    while True:
+        factor_or_dividend = random.randint(1, 12)
+        if operation == '*':
+            question = f"{factor_or_dividend} * {table_or_divisor}"
+            answer = factor_or_dividend * table_or_divisor
+        elif operation == '/':
+            question = f"{factor_or_dividend * table_or_divisor} // {table_or_divisor}"
+            answer = factor_or_dividend
+        elif operation == '%':
+            question = f"{factor_or_dividend} % {table_or_divisor}"
+            answer = factor_or_dividend % table_or_divisor
+
+        if question not in asked_questions.keys():
+            asked_questions[question] = asked_questions.get(question, 0) + 1
+            return question, answer
+
 
 def choose_door(num_doors):
     # Choose a door to escape zombies; random choice for zombie door
@@ -90,17 +96,15 @@ while continue_game:
 
     while questions_asked < num_questions:
         # Inner loop for each question
-        question_loop = True
-        while question_loop:
-            # Handle random operation choice
-            current_operation = operation if operation != 'slump' else random.choice(['*', '/', '%'])
-            current_table_or_divisor = random.randint(2, 12 if current_operation == '*' else 5) if operation == 'slump' else table_or_divisor
+        # Handle random operation choice
+        current_operation = operation if operation != 'slump' else random.choice(['*', '/', '%'])
+        current_table_or_divisor = random.randint(2, 12 if current_operation == '*' else 5) if operation == 'slump' else table_or_divisor
 
-            try:
-                question, answer = generate_question(current_operation, current_table_or_divisor)
-            except ValueError:
-                print("Invalid operation, please restart the game.")
-                break
+        try:
+            question, answer = generate_question(current_operation, current_table_or_divisor, asked_questions)
+        except ValueError:
+            print("Invalid operation, please restart the game.")
+            break
 
             # Avoid question repetition based on game difficulty
             times_asked = asked_questions.get(question, 0)
