@@ -106,10 +106,13 @@ while continue_game:
             # Avoid question repetition based on game difficulty
             times_asked = asked_questions.get(question, 0)
             if num_questions <= 13 and times_asked == 0:
+                question_loop = False
                 break
             elif 14 <= num_questions <= 26 and times_asked < 2:
+                question_loop = False
                 break
             elif 27 <= num_questions <= 39 and times_asked < 3:
+                question_loop = False
                 break
 
         asked_questions[question] = asked_questions.get(question, 0) + 1
