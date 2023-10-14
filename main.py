@@ -38,12 +38,7 @@ def choose_door(num_doors):
     # Choose a door to escape zombies; random choice for zombie door
     zombie_door = random.randint(1, num_doors)
     user_choice = get_integer_input(f"Välj en dörr (1-{num_doors}): ", 1, num_doors)
-    if user_choice == zombie_door:
-        print(f"Du förlorade. Zombiesarna var bakom dörr {zombie_door}.")
-        return False
-    else:
-        print(f"Säker! Zombiesarna var bakom dörr {zombie_door}.")
-        return True
+    return user_choice == zombie_door, zombie_door
 
 def setup_game_conditions(won_last_game, previous_conditions):
     # Setup game conditions either based on last game or fresh input
@@ -123,8 +118,12 @@ while continue_game:
         if user_answer == answer:
             print(f"Korrekt! Du har {correct_answers + 1} korrekta svar.")
             if questions_asked < num_questions - 1:
-                if not choose_door(num_questions - questions_asked):
+                is_zombie_door, zombie_door = choose_door(num_questions - questions_asked)
+                if is_zombie_door:
+                    print(f"Du förlorade. Zombiesarna var bakom dörr {zombie_door}.")
                     break
+                else:
+                    print(f"Säker! Zombiesarna var bakom dörr {zombie_door}.")
             correct_answers += 1
         else:
             print(f"Fel svar. Du förlorade. Rätt svar var {answer}.")
