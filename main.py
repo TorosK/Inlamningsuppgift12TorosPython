@@ -28,11 +28,14 @@ def generate_question(operation, table_or_divisor):
 
     factor_or_dividend = random.randint(1, 12)
     if operation == '*':
-        return f"{factor_or_dividend} * {table_or_divisor}", factor_or_dividend * table_or_divisor
+        return f"{factor_or_dividend} * {table_or_divisor}", \
+               factor_or_dividend * table_or_divisor
     elif operation == '/':
-        return f"{factor_or_dividend * table_or_divisor} // {table_or_divisor}", factor_or_dividend
+        return f"{factor_or_dividend * table_or_divisor} // {table_or_divisor}", \
+               factor_or_dividend
     elif operation == '%':
-        return f"{factor_or_dividend} % {table_or_divisor}", factor_or_dividend % table_or_divisor
+        return f"{factor_or_dividend} % {table_or_divisor}", \
+               factor_or_dividend % table_or_divisor
 
 def choose_door(num_doors):
     # Choose a door to escape zombies; random choice for zombie door
@@ -44,7 +47,8 @@ def setup_game_conditions(won_last_game, previous_conditions):
     # Setup game conditions either based on last game or fresh input
     if won_last_game or previous_conditions['num_questions'] is None:
         num_questions = get_integer_input("Välj antal frågor (12 - 39): ", 12, 39)
-        operation = get_operation_input("Välj räknesätt (*, /, %, slump): ", ['*', '/', '%', 'slump'])
+        operation = get_operation_input("Välj räknesätt (*, /, %, slump): ", \
+                                        ['*', '/', '%', 'slump'])
     else:
         num_questions = previous_conditions['num_questions']
         operation = previous_conditions['operation']
@@ -91,7 +95,7 @@ while continue_game:
             # Handle random operation choice
             current_operation = operation if operation != 'slump' else random.choice(['*', '/', '%'])
             current_table_or_divisor = random.randint(2, 12 if current_operation == '*' else 5) if operation == 'slump' else table_or_divisor
-            
+
             try:
                 question, answer = generate_question(current_operation, current_table_or_divisor)
             except ValueError:
